@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Timers;
 
@@ -510,20 +511,39 @@ namespace ConsoleApp5
             Console.WriteLine("System.Timers.Timer {0:T}", e.SignalTime);
         }
 
-        //const int iter = 20000;
-        //public void p42()
-        //{
-        //    Stopwatch sw = Stopwatch.StartNew();
-        //    System.IO.File.WriteAllText("test.tex", new string('*', 3000000));
-        //    Console.WriteLine(sw.Elapsed);
-        //}
+        volatile int iter = 20000;
+        public void p42()
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            System.IO.File.WriteAllText("test.tex", new string('*', 3000000));
+            Console.WriteLine(sw.Elapsed);//
+            string s = "";
+            DateTime time = DateTime.Now;
+            for (int i = 0; i < iter; i++)
+                s += "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
+            Console.WriteLine(DateTime.Now -time);//
+            string s2 = "";
+            Stopwatch stime = Stopwatch.StartNew();
+            for (int i = 0; i < iter; i++)
+                s2 += "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
+            Console.WriteLine(stime.Elapsed);//
+            StringBuilder builder = new StringBuilder();
+            time = DateTime.Now;
+            for (int i = 0; i < iter; i++)
+                builder.Append("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
+            Console.WriteLine(DateTime.Now - time);
+            stime = Stopwatch.StartNew();
+            for (int i = 0; i < iter; i++)
+                builder.Append("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
+            Console.WriteLine(stime.Elapsed);
+        }
     }
     class Program
     {
         [Obsolete]
         static void Main(string[] args)
         {
-            new P().Timers();
+            new P().p42();
         }
     }
 }
