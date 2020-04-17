@@ -1,0 +1,7 @@
+C:\Users\khore\source\repos\AsynchronDelegate\AsynchronDelegate\bin\Debug\AsynchronDelegate.exe.config
+C:\Users\khore\source\repos\AsynchronDelegate\AsynchronDelegate\bin\Debug\AsynchronDelegate.exe
+C:\Users\khore\source\repos\AsynchronDelegate\AsynchronDelegate\bin\Debug\AsynchronDelegate.pdb
+C:\Users\khore\source\repos\AsynchronDelegate\AsynchronDelegate\obj\Debug\AsynchronDelegate.csprojAssemblyReference.cache
+C:\Users\khore\source\repos\AsynchronDelegate\AsynchronDelegate\obj\Debug\AsynchronDelegate.csproj.CoreCompileInputs.cache
+C:\Users\khore\source\repos\AsynchronDelegate\AsynchronDelegate\obj\Debug\AsynchronDelegate.exe
+C:\Users\khore\source\repos\AsynchronDelegate\AsynchronDelegate\obj\Debug\AsynchronDelegate.pdb
