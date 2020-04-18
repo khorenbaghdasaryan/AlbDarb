@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -139,11 +140,122 @@ namespace AsynchronDelegate
             }
         }
     }
+    class DelSyn
+    {
+        public delegate int Del1(int x, int y);
+        public void Met()
+        {
+            Console.WriteLine($"Main() thread = {Thread.CurrentThread.ManagedThreadId}");
+            Del1 del1 = new Del1(Add);
+            IAsyncResult async = del1.BeginInvoke(10, 10, null, null);
+            //while (!async.IsCompleted)
+            //{
+            //    Console.WriteLine("Doing more work in Main()!");
+            //}
+            while (!async.AsyncWaitHandle.WaitOne(2, true))
+            {
+                Console.WriteLine("Doing more work in Main()!");
+            }
+            int answer = del1.EndInvoke(async);
+            Console.WriteLine($"10+10={answer}");
+        }
+
+        private int Add(int x, int y)
+        {
+            Console.WriteLine($"Add() thread = {Thread.CurrentThread.ManagedThreadId}");
+            Thread.Sleep(5);
+            return x + y;
+        }
+
+        Del1 del2;
+        public void Met2()
+        {
+            Console.WriteLine($"Main() thread = {Thread.CurrentThread.ManagedThreadId}");
+            del2 = new Del1(Add2);
+            IAsyncResult async = del2.BeginInvoke(10, 10, new AsyncCallback(m1), "barev #######");
+            Console.WriteLine("Doing more work in Main()!");
+            //for (int i = 0; i <= 30; i++)
+            //{
+            //    Console.WriteLine("#######" + i);
+            //}
+            Thread.Sleep(1000);
+        }
+
+        private int Add2(int x, int y)
+        {
+            Console.WriteLine($"Add() thread = {Thread.CurrentThread.ManagedThreadId}");
+            //for (int i = 0; i <= 30; i++)
+            //{
+            //    Console.WriteLine("           !!!!!!!" + i);
+            //}
+            return x + y;
+        }
+
+        private void m1(IAsyncResult ar)
+        {
+            Console.WriteLine($"m1() thread = {Thread.CurrentThread.ManagedThreadId}");
+            AsyncResult resultc = (AsyncResult)ar;
+            Del1 dd = (Del1)resultc.AsyncDelegate;
+            Console.WriteLine("sum = " + dd.EndInvoke(resultc));
+            Console.WriteLine(ar.AsyncState);
+        }
+    }
+
+    class TP
+    {
+        public void Met3()
+        {
+            int nWorker, nPort;
+            ThreadPool.GetMaxThreads(out nWorker, out nPort);
+            Console.WriteLine($"Max Threads : {nWorker}, I/O : {nPort}");
+            //
+            Console.WriteLine($"Main() thread = {Thread.CurrentThread.ManagedThreadId}");
+            for (int i = 0; i < 8; i++)
+            {
+                ThreadPool.QueueUserWorkItem(m2);
+            }
+            Thread.Sleep(1000);
+        }
+
+        public void m2(object state)
+        {
+            Console.WriteLine($"m2() thread = {Thread.CurrentThread.ManagedThreadId}");
+        }
+
+
+        //object ob = new object();//for synchronization
+        public void Met4()
+        {
+            Console.WriteLine($"Main Thread: {Thread.CurrentThread.ManagedThreadId}");
+            Task task1 = new Task(m3);
+            Task task2 = new Task(m3);
+            task1.Start();
+            task2.Start();
+            for (int i = 0; i <= 30; i++)
+            {
+                Console.WriteLine($"####### {i}");
+            }
+            //Thread.Sleep(100);
+        }
+        private void m3()
+        {
+            Console.WriteLine($"Start Task Id = {Task.CurrentId}");
+            Console.WriteLine($"Thread m3() end: {Task.CurrentId}");
+            //lock(ob)
+            for (int i = 0; i <= 30; i++)
+            {
+                Console.WriteLine($"     Task {Task.CurrentId} ... {i}");
+            }
+            Console.WriteLine($"End task id {Task.CurrentId} ");
+            Console.WriteLine($"Thread m3 end: {Thread.CurrentThread.ManagedThreadId}");
+
+        }
+    }
     class Program
     {
         static void Main(string[] args)
         {
-            new DelegateAsynchron().Met2();
+            new TP().Met4();
         }
     }
 }
