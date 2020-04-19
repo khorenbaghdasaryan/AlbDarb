@@ -223,8 +223,8 @@ namespace AsynchronDelegate
         }
 
 
-        //object ob = new object();//for synchronization
-        public void Met4()
+        static object ob = new object();//for synchronization
+        public static void Met4()
         {
             Console.WriteLine($"Main Thread: {Thread.CurrentThread.ManagedThreadId}");
             Task task1 = new Task(m3);
@@ -235,27 +235,102 @@ namespace AsynchronDelegate
             {
                 Console.WriteLine($"####### {i}");
             }
-            //Thread.Sleep(100);
+            Thread.Sleep(100);
+            //task1.Wait();
+            //task2.Wait();
+            //Task.WaitAll(task1, task2);
+            //Task.WaitAny(task1, task2);
         }
-        private void m3()
+        private static void m3()
         {
             Console.WriteLine($"Start Task Id = {Task.CurrentId}");
             Console.WriteLine($"Thread m3() end: {Task.CurrentId}");
-            //lock(ob)
+            lock(ob)
             for (int i = 0; i <= 30; i++)
             {
                 Console.WriteLine($"     Task {Task.CurrentId} ... {i}");
             }
             Console.WriteLine($"End task id {Task.CurrentId} ");
             Console.WriteLine($"Thread m3 end: {Thread.CurrentThread.ManagedThreadId}");
+        }
+    }
 
+    class P
+    {
+        public void Met4()
+        {
+            Console.WriteLine($"Main Thread: {Thread.CurrentThread.ManagedThreadId}");
+            Parallel.Invoke(m1, m2, m3);
+        }
+        public int N = 30;
+        public void m1()
+        {
+            for (int i = 0; i <= N; i++)
+            {
+                Console.WriteLine("!!!!!!" + 1);
+            }
+        }
+        public void m2()
+        {
+            for (int i = 0; i <= N; i++)
+            {
+                Console.WriteLine("        +++++++" + 1);
+            }
+        }
+        public void m3()
+        {
+            for (int i = 0; i <= N; i++)
+            {
+                Console.WriteLine("                =========" + 1);
+            }
+        }
+
+        int[] ar;
+        public void Met5()
+        {
+            Console.WriteLine("Main starting.");
+            ar = new int[50000];
+            for (int i = 0; i < ar.Length; i++)
+            {
+                ar[i] = i;
+            }
+            Parallel.For(0, ar.Length, m4);
+            Console.WriteLine("Main ending.");
+        }
+        private void m4(int i)
+        {
+            if (ar[i] < 10000)
+            {
+                ar[i] = 0;
+                Console.WriteLine("!!!!!!");
+            }
+            if (ar[i] < 20000 & ar[i] > 10000)
+            {
+                ar[i] = 100;
+                Console.WriteLine("       +++++++");
+            }
+            if (ar[i] < 30000 & ar[i] > 20000)
+            {
+                ar[i] = 300;
+                Console.WriteLine("                 -----------");
+            }
+            if (ar[i] < 40000 & ar[i] > 30000)
+            {
+                ar[i] = 300;
+                Console.WriteLine("                 -----------");
+            }
+            if (ar[i] > 40000)
+            {
+                ar[i] = 400;
+                Console.WriteLine("                                 ==============");
+            }
         }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            new TP().Met4();
+            new P().Met5();
         }
     }
 }
