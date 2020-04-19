@@ -330,7 +330,7 @@ namespace AsynchronDelegate
     {
         static void Main(string[] args)
         {
-            new P().Met5();
+            new AsyncAwait().Met7();
         }
     }
 }
